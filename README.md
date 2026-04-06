@@ -1,38 +1,101 @@
-Backpropagation Neural Network for Image Classification
-Assignment #1: Multi-Layer Perceptron (MLP) from Scratch
-Author: Suhas Reddy Kotla (L30122169)
-Project Overview
-This project implements a Multi-Layer Perceptron (MLP) neural network from scratch using Python and NumPy. The network is trained using the backpropagation algorithm to perform pixel-wise color classification on an image of Jupiter’s moon, Io. The goal is to distinguish between different surface features such as background, general surface, volcanic craters, and bright spots based on RGB values.
-Technical Features
-Architecture: Multi-Layer Perceptron (MLP) with one hidden layer.
-Activation Functions:
-Sigmoid: Used for the hidden layer to map inputs to a probability-like range.
-Softmax: Applied to the output layer for multi-class classification.
-Optimization: standard two-phase cycle consisting of:
-Forward Pass: Data flows from input pixels through hidden layers to generate predictions.
-Backward Pass: Uses the chain rule to propagate error and update weights based on a set learning rate.
-Loss Function: Cross-entropy loss.
-Dataset and Preprocessing
-The model uses an image of Jupiter's moon, Io (Source: NASA/JPL via Gonzalez and Woods).
-Training Points: Specific coordinate points were selected to represent four classes: Background, Surface, Volcano, and Bright spots.
-Normalization: Pixel RGB values are normalized to a range of $[0, 1]$ before being fed into the network.
+# Backpropagation Neural Network for Image Classification
+
+Multi-Layer Perceptron (MLP) from Scratch — Assignment #1
+Lewis University | MS in Artificial Intelligence | Suhas Reddy Kotla (L30122169)
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=numpy&logoColor=white)
+![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=flat-square&logo=opencv&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=flat-square&logo=python&logoColor=white)
+![Assignment](https://img.shields.io/badge/Assignment-MLP%20from%20Scratch-7C3AED?style=flat-square)
+
+---
+
+## What This Project Does
+
+Can a neural network learn to read the surface of Jupiter's moon?
+
+This project implements a Multi-Layer Perceptron from scratch using only Python and NumPy — no PyTorch, no TensorFlow. The network is trained via backpropagation to perform pixel-wise color classification on a NASA image of Io, distinguishing between four surface features based purely on RGB values.
+
+**Four classes:**
+- `0` — Background (black space)
+- `1` — General surface
+- `2` — Volcanic craters
+- `3` — Bright spots
+
+---
+
+## Architecture
+Input (3 RGB values) → Hidden Layer (Sigmoid) → Output Layer (Softmax) [3] [N] [4 classes]
+
+| Component | Detail |
+|-----------|--------|
+| Type | Multi-Layer Perceptron (MLP) |
+| Hidden activation | Sigmoid |
+| Output activation | Softmax |
+| Loss function | Cross-entropy |
+| Optimizer | Backpropagation + SGD |
+| Training epochs | 5,000 |
+
+---
+
+## How It Works
+
+**Forward Pass** — data flows from input RGB pixels through the hidden layer to generate class probabilities.
+
+**Backward Pass** — the chain rule propagates error back through the network, updating weights at each layer based on the learning rate.
+
+
+# Forward pass
+z1 = X @ W1 + b1
+a1 = sigmoid(z1)          # hidden layer activation
+z2 = a1 @ W2 + b2
+a2 = softmax(z2)          # output probabilities
+
+# Backward pass
+dz2 = a2 - y_onehot                        # output error
+dW2 = a1.T @ dz2 / m                       # output weight gradient
+dz1 = (dz2 @ W2.T) * sigmoid_grad(z1)     # hidden error (chain rule)
+dW1 = X.T @ dz1 / m                        # hidden weight gradient
+
+Dataset
+Image: Jupiter's moon Io — NASA/JPL
+(Source: Digital Image Processing, 3rd ed., Gonzalez & Woods)
+
+Preprocessing:
+
+RGB pixel values normalized to [0, 1]
+Specific coordinate points hand-selected to represent each of the 4 classes
+Training points cover background, surface, volcanic craters, and bright spots
+Results
+Metric	Value
+Initial loss	~1.38
+Final loss (5,000 epochs)	Significantly reduced
+Background classification	High precision
+Key challenge	Volcanic craters misclassified as background — both have very low-intensity dark pixels, showing the limitation of color-only classification without spatial context
+Loss is printed every 100 epochs. Final output is a full Classification Map overlaid on the original image.
+
 Getting Started
 Prerequisites
+
 Python 3.x
 NumPy
 OpenCV (cv2)
 Matplotlib
-Installation
-Bash
-pip install numpy opencv-python matplotlib
+Install
 
-Usage
-Ensure the image file Fig0628(a)(jupiter-moon.-Io).tif is in your working directory.
-Run the notebook or script to initialize and train the network.
-The model will output loss values every 100 epochs and display a final Classification Map.
-Results and Analysis
-Performance: The model effectively minimizes loss over time (starting around 1.38 and dropping significantly over 5,000 epochs).
-Observations: The network identifies the black background with high precision due to its numerical distinctness.
-Challenges: Some volcanic craters were misclassified as background because both consist of very low-intensity dark pixels, showing the limitation of color classification without spatial context.
-Resource Citation
-Image Source: Jupiter Moon Io, NASA/JPL. From Digital Image Processing, 3rd ed, by Gonzalez and Woods.
+pip install numpy opencv-python matplotlib
+Run
+
+# Place the image file in your working directory:
+# Fig0628(a)(jupiter-moon.-Io).tif
+
+# Then run the notebook or script
+python mlp_classifier.py
+Key Takeaway
+Color-based classification without spatial context has clear limits — dark volcanic craters and black background share similar RGB values, causing misclassification. This motivates the use of convolutional architectures (CNNs) that capture spatial relationships, not just pixel color.
+
+Author
+Suhas Reddy Kotla
+MS in Artificial Intelligence — Lewis University (GPA: 4.0)
+Graduate AI Research Assistant
